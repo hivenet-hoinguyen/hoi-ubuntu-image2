@@ -4,11 +4,15 @@ ENV VERSION=staging-1.30
 ENV MODE=staging
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Base tools + Java + Python + network tools
+# Install base tools + Java + Python + network tools + nano
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      openjdk-17-jdk wget curl python3 iputils-ping netcat-openbsd \
-      nano ca-certificates gnupg && \
+      openjdk-17-jdk \
+      wget curl ca-certificates gnupg \
+      python3 \
+      iputils-ping \
+      netcat-openbsd \
+      nano && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Go
@@ -37,8 +41,5 @@ RUN printf '%s\n' \
   "export PATH=${PATH}" \
   > /etc/profile.d/custom_env.sh
 
-# Copy init script (required)
-COPY init.sh /usr/local/bin/init.sh
-RUN chmod +x /usr/local/bin/init.sh
-
-ENTRYPOINT ["/usr/local/bin/init.sh"]
+# Keep container alive for Kubernetes exec/debug
+CMD ["sleep", "infinity"]
